@@ -1,19 +1,27 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"unicode/utf8"
+)
 
-func Reverse(s string) string {
-	bArr := []byte(s)
-	for left, right := 0, len(bArr)-1; left < len(bArr)/2; left, right = left+1, right-1 {
-		bArr[left], bArr[right] = bArr[right], bArr[left]
+func Reverse(s string) (string, error) {
+	if !utf8.ValidString(s) {
+		return s, errors.New("not an utf8 encoded string")
 	}
-	return string(bArr)
+	rArr := []rune(s)
+	fmt.Printf("runes: %q\n", rArr)
+	for left, right := 0, len(rArr)-1; left < len(rArr)/2; left, right = left+1, right-1 {
+		rArr[left], rArr[right] = rArr[right], rArr[left]
+	}
+	return string(rArr), nil
 }
 
 func main() {
 	s := "Hello, World"
-	r := Reverse(s)
-	rr := Reverse(r)
+	r, _ := Reverse(s)
+	rr, _ := Reverse(r)
 	fmt.Println(s)
 	fmt.Println(r)
 	fmt.Println(rr)
