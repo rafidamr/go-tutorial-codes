@@ -1,8 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"html/template"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -10,6 +11,8 @@ type Page struct {
 	Title string
 	Body  []byte
 }
+
+var templates = template.Must(template.ParseFiles("view.html", "edit.html"))
 
 func (p *Page) save() error {
 	filename := p.Title + ".txt"
@@ -25,18 +28,47 @@ func load(title string) (*Page, error) {
 	return &Page{Title: title, Body: body}, nil
 }
 
+func renderPage(w http.ResponseWriter, templateName string, p *Page) {
+	err := templates.ExecuteTemplate(w, templateName+".html", p)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
+func viewHandler(w http.ResponseWriter, r *http.Request) {
+	pageName := r.URL.Path[len("/view/"):]
+	p, err := load(pageName)
+	if err != nil {
+		http.Redirect(w, r, "/edit/"+pageName, http.StatusFound)
+	}
+	renderPage(w, "view", p)
+}
+
+func editViewHandler(w http.ResponseWriter, r *http.Request) {
+	pageName := r.URL.Path[len("/edit/"):]
+	p, err := load(pageName)
+	if err != nil {
+		p = &Page{Title: pageName}
+	}
+	renderPage(w, "edit", p)
+}
+
+func saveHandler(w http.ResponseWriter, r *http.Request) {
+	pageName := r.URL.Path[len("/save/"):]
+	body := r.FormValue("body")
+	p := &Page{Title: pageName, Body: []byte(body)}
+	err := p.save()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/view/"+pageName, http.StatusFound)
+}
+
 func main() {
-	log.SetPrefix("tutorial 7: ")
-	log.SetFlags(0)
-	title := "a page title"
-	page := &Page{Title: title, Body: []byte("a page body")}
-	err := page.save()
-	if err != nil {
-		log.Fatal(err)
-	}
-	p, err := load(title)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("Title=%q Body=%q", p.Title, string(p.Body))
+	http.HandleFunc("/view/", viewHandler)
+	http.HandleFunc("/edit/", editViewHandler)
+	http.HandleFunc("/save/", saveHandler)
+	log.Fatal(http.ListenAndServe(":8000", nil))
 }
