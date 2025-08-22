@@ -68,12 +68,12 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 
 func makeHandler(fn func(w http.ResponseWriter, r *http.Request, title string)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		m := validTitleRgx.FindStringSubmatch(r.URL.Path)
-		if m == nil {
+		captureGroups := validTitleRgx.FindStringSubmatch(r.URL.Path)
+		if captureGroups == nil {
 			http.NotFound(w, r)
 			return
 		}
-		fn(w, r, m[2])
+		fn(w, r, captureGroups[2])
 	}
 }
 
