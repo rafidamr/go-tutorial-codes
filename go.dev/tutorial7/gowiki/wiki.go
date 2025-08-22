@@ -5,12 +5,15 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
 )
 
 type Page struct {
 	Title string
 	Body  []byte
 }
+
+var validTitleRgx = regexp.MustCompile("^/(view|edit|save)/([a-zA-Z0-9_-]+)$")
 
 var templates = template.Must(template.ParseFiles("view.html", "edit.html"))
 
@@ -36,39 +39,47 @@ func renderPage(w http.ResponseWriter, templateName string, p *Page) {
 	}
 }
 
-func viewHandler(w http.ResponseWriter, r *http.Request) {
-	pageName := r.URL.Path[len("/view/"):]
-	p, err := load(pageName)
+func viewHandler(w http.ResponseWriter, r *http.Request, title string) {
+	p, err := load(title)
 	if err != nil {
-		http.Redirect(w, r, "/edit/"+pageName, http.StatusFound)
+		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
 	}
 	renderPage(w, "view", p)
 }
 
-func editViewHandler(w http.ResponseWriter, r *http.Request) {
-	pageName := r.URL.Path[len("/edit/"):]
-	p, err := load(pageName)
+func editViewHandler(w http.ResponseWriter, r *http.Request, title string) {
+	p, err := load(title)
 	if err != nil {
-		p = &Page{Title: pageName}
+		p = &Page{Title: title}
 	}
 	renderPage(w, "edit", p)
 }
 
-func saveHandler(w http.ResponseWriter, r *http.Request) {
-	pageName := r.URL.Path[len("/save/"):]
+func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	body := r.FormValue("body")
-	p := &Page{Title: pageName, Body: []byte(body)}
+	p := &Page{Title: title, Body: []byte(body)}
 	err := p.save()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/view/"+pageName, http.StatusFound)
+	http.Redirect(w, r, "/view/"+title, http.StatusFound)
+}
+
+func makeHandler(fn func(w http.ResponseWriter, r *http.Request, title string)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		m := validTitleRgx.FindStringSubmatch(r.URL.Path)
+		if m == nil {
+			http.NotFound(w, r)
+			return
+		}
+		fn(w, r, m[2])
+	}
 }
 
 func main() {
-	http.HandleFunc("/view/", viewHandler)
-	http.HandleFunc("/edit/", editViewHandler)
-	http.HandleFunc("/save/", saveHandler)
+	http.HandleFunc("/view/", makeHandler(viewHandler))
+	http.HandleFunc("/edit/", makeHandler(editViewHandler))
+	http.HandleFunc("/save/", makeHandler(saveHandler))
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
