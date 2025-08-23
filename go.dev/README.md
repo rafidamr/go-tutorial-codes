@@ -1,0 +1,1 @@
+### The Codes of Getting Started Section of https://go.dev/doc/
