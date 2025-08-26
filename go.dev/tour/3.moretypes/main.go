@@ -8,5 +8,9 @@ func main() {
 		pointer_func()
 	case "4":
 		struct_func()
+	case "6":
+		array_func()
+	case "7":
+		sliceFunc()
 	}
 }
