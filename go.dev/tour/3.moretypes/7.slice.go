@@ -44,6 +44,22 @@ func expand_outofrange(slc []int) {
 	printSlice(slc)
 }
 
+// creating a matrix
+func Pic(dx, dy int) [][]uint8 {
+	var mtx = make([][]uint8, dy)
+	for i := 0; i < dy; i++ {
+		t := make([]uint8, dx)
+		mtx[i] = t
+	}
+
+	for y := 0; y < dy; y++ {
+		for x := 0; x < dx; x++ {
+			mtx[y][x] = uint8((x + y) / 2)
+		}
+	}
+	return mtx
+}
+
 func printSlice(slc []int) {
 	fmt.Printf("len=%v cap=%v slc=%v\n", len(slc), cap(slc), slc)
 }

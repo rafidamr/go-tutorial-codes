@@ -1,6 +1,8 @@
 package main
 
-import "os"
+import (
+	"os"
+)
 
 func main() {
 	switch os.Args[1] {
@@ -12,5 +14,9 @@ func main() {
 		array_func()
 	case "7":
 		sliceFunc()
+	case "19":
+		mapsFunc()
+	case "25":
+		closureFunc()
 	}
 }
