@@ -3,4 +3,5 @@ go 1.25.0
 use (
 	./1.basics
 	./2.flowcontrol
+	./3.moretypes
 )
