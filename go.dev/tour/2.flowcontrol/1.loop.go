@@ -8,7 +8,7 @@ import (
 func looping() {
 	var sum int
 	for i := 0; sum < 1000; i++ {
-		sum++
+		sum += i
 	}
 	fmt.Println(sum)
 	sum = 0
