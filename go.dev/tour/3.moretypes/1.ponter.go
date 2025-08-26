@@ -1,8 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func pointer() {
+func pointer_func() {
 	var p *float32
 	var i, j float32 = 123, 9
 	p = &i
