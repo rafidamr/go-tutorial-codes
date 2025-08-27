@@ -4,4 +4,5 @@ use (
 	./1.basics
 	./2.flowcontrol
 	./3.moretypes
+	./4.methods
 )
