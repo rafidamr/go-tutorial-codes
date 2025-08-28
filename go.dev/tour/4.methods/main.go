@@ -6,5 +6,7 @@ func main() {
 	switch os.Args[1] {
 	case "1":
 		methods_func()
+	case "9":
+		interfaces_func()
 	}
 }
