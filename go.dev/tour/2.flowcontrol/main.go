@@ -6,6 +6,8 @@ func main() {
 	switch os.Args[1] {
 	case "1":
 		looping()
+	case "8":
+		newtonmethod_func()
 	case "9":
 		switch_conditional()
 	case "12":
