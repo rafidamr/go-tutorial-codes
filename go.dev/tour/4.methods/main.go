@@ -12,5 +12,7 @@ func main() {
 		interfaces2_func()
 	case "18":
 		stringer_func()
+	case "20":
+		error_func()
 	}
 }
