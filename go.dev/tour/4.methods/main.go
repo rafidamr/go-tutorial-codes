@@ -10,5 +10,7 @@ func main() {
 		interfaces_func()
 	case "14":
 		interfaces2_func()
+	case "18":
+		stringer_func()
 	}
 }
