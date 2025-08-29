@@ -8,5 +8,7 @@ func main() {
 		methods_func()
 	case "9":
 		interfaces_func()
+	case "14":
+		interfaces2_func()
 	}
 }
