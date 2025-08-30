@@ -18,5 +18,7 @@ func main() {
 		reader_func()
 	case "23":
 		reader_func2()
+	case "25":
+		image_func()
 	}
 }
