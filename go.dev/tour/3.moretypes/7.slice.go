@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"strconv"
+
+	"golang.org/x/tour/pic"
 )
 
 func sliceFunc() {
@@ -31,6 +33,9 @@ func sliceFunc() {
 	for idx := range slc2 {
 		fmt.Print(strconv.Itoa(idx) + " ")
 	}
+
+	fmt.Printf("\nBase64 encoding of an image:\n")
+	pic.Show(Pic)
 }
 
 func expand_outofrange(slc []int) {
