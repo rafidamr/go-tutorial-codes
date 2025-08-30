@@ -5,4 +5,5 @@ use (
 	./2.flowcontrol
 	./3.moretypes
 	./4.methods
+	./5.generics
 )
