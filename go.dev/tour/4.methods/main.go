@@ -14,5 +14,7 @@ func main() {
 		stringer_func()
 	case "20":
 		error_func()
+	case "22":
+		reader_func()
 	}
 }
