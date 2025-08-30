@@ -16,5 +16,7 @@ func main() {
 		error_func()
 	case "22":
 		reader_func()
+	case "23":
+		reader_func2()
 	}
 }
