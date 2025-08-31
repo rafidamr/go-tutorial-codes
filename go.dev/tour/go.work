@@ -6,4 +6,5 @@ use (
 	./3.moretypes
 	./4.methods
 	./5.generics
+	./6.concurrency
 )
