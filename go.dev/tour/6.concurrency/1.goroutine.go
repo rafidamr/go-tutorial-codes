@@ -12,7 +12,7 @@ func say(s string) {
 	}
 }
 
-func main() {
+func firstFunc() {
 	go say("world")
 	say("hello")
 }
