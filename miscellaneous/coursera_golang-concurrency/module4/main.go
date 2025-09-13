@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"sync"
 )
 
 func produce(c chan int, abort chan int) {
@@ -38,14 +40,32 @@ func firstComeFirstServe(c chan int, abort chan int) {
 	}
 }
 
-func f1() {
-	c := make(chan int, 5)
-	abort := make(chan int, 1)
-	go produce(c, abort)
-	go firstComeFirstServe(c, abort)
-	iterate(c)
+func increment(i *int, wg *sync.WaitGroup) {
+	*i = *i + 1
+	wg.Done()
 }
 
 func main() {
-	f1()
+	switch os.Args[1] {
+	case "1":
+		// Synchornized channel communication
+		c := make(chan int, 5)
+		abort := make(chan int, 1)
+		go produce(c, abort)
+		go firstComeFirstServe(c, abort)
+		iterate(c)
+	case "2":
+		// Mutex
+		var i = 0
+		var wg sync.WaitGroup
+		c := 100
+		wg.Add(c)
+		for ci := 0; ci < c; ci++ {
+			go increment(&i, &wg)
+		}
+		wg.Wait()
+		if i != c {
+			fmt.Printf("Not %v: %v\n", c, i)
+		}
+	}
 }
