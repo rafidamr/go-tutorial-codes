@@ -52,6 +52,14 @@ func incrementMutex(i *int, wg *sync.WaitGroup, mt *sync.Mutex) {
 	wg.Done()
 }
 
+func initAndExecute(waitGroup *sync.WaitGroup, on *sync.Once) {
+	on.Do(func() {
+		fmt.Println("Init")
+	})
+	fmt.Println("Execute")
+	waitGroup.Done()
+}
+
 func main() {
 	switch os.Args[1] {
 	case "1":
@@ -80,5 +88,14 @@ func main() {
 		if j != c {
 			fmt.Printf("j != %v: %v\n", c, j)
 		}
+	case "3":
+		// Synchronized initialization
+		var wg sync.WaitGroup
+		var on sync.Once
+		wg.Add(2)
+		go initAndExecute(&wg, &on)
+		go initAndExecute(&wg, &on)
+		go initAndExecute(&wg, &on)
+		wg.Wait()
 	}
 }
