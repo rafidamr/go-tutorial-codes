@@ -45,6 +45,13 @@ func increment(i *int, wg *sync.WaitGroup) {
 	wg.Done()
 }
 
+func incrementMutex(i *int, wg *sync.WaitGroup, mt *sync.Mutex) {
+	mt.Lock()
+	*i = *i + 1
+	mt.Unlock()
+	wg.Done()
+}
+
 func main() {
 	switch os.Args[1] {
 	case "1":
@@ -57,15 +64,21 @@ func main() {
 	case "2":
 		// Mutex
 		var i = 0
+		var j = 0
 		var wg sync.WaitGroup
+		var mt sync.Mutex
 		c := 100
-		wg.Add(c)
+		wg.Add(c * 2)
 		for ci := 0; ci < c; ci++ {
 			go increment(&i, &wg)
+			go incrementMutex(&j, &wg, &mt)
 		}
 		wg.Wait()
 		if i != c {
-			fmt.Printf("Not %v: %v\n", c, i)
+			fmt.Printf("i != %v: %v\n", c, i)
+		}
+		if j != c {
+			fmt.Printf("j != %v: %v\n", c, j)
 		}
 	}
 }
