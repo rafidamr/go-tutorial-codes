@@ -126,7 +126,8 @@ func main() {
 		})
 		wg.Wait()
 	case "4.2":
-		// Deadlock (The Dining Philosopher)
+		// Deadlock (The Dining Philosopher): may cause deadlock
+		// One solution is using Djikstra's solution, but may cause starvation
 		num := 3
 		cstickArr := make([]*CStick, num)
 		philArr := make([]*Phil, num)
