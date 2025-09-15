@@ -66,13 +66,12 @@ type Phil struct {
 	name                          string
 }
 
-func (p Phil) eat(wg *sync.WaitGroup) {
-	// p.LeftChopstick.Lock()
-	// p.RightChopstick.Lock()
+func (p Phil) eat() {
+	p.LeftChopstick.Lock()
+	p.RightChopstick.Lock()
 	fmt.Printf("%s: Iam eating\n", p.name)
-	// p.LeftChopstick.Unlock()
-	// p.RightChopstick.Unlock()
-	wg.Done()
+	p.LeftChopstick.Unlock()
+	p.RightChopstick.Unlock()
 }
 
 func main() {
@@ -141,11 +140,8 @@ func main() {
 				RightChopstick: cstickArr[(i+1)%num]}
 		}
 		var wg sync.WaitGroup
-		wg.Add(1)
-		wg.Add(1)
 		for i := 0; i < num; i++ {
-			fmt.Println(i)
-			go philArr[i].eat(&wg)
+			wg.Go(philArr[i].eat)
 		}
 		wg.Wait()
 		fmt.Println("All finished eating")
