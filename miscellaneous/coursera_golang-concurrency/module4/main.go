@@ -97,5 +97,19 @@ func main() {
 		go initAndExecute(&wg, &on)
 		go initAndExecute(&wg, &on)
 		wg.Wait()
+	case "4":
+		// Deadlock: circular dependencies
+		var wg sync.WaitGroup
+		c1 := make(chan int)
+		c2 := make(chan int)
+		wg.Go(func() {
+			c1 <- 1
+			<-c2
+		})
+		wg.Go(func() {
+			c2 <- 1
+			<-c1
+		})
+		wg.Wait()
 	}
 }
