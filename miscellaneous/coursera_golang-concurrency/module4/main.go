@@ -60,6 +60,21 @@ func initAndExecute(waitGroup *sync.WaitGroup, on *sync.Once) {
 	waitGroup.Done()
 }
 
+type CStick struct{ sync.Mutex }
+type Phil struct {
+	LeftChopstick, RightChopstick *CStick
+	name                          string
+}
+
+func (p Phil) eat(wg *sync.WaitGroup) {
+	// p.LeftChopstick.Lock()
+	// p.RightChopstick.Lock()
+	fmt.Printf("%s: Iam eating\n", p.name)
+	// p.LeftChopstick.Unlock()
+	// p.RightChopstick.Unlock()
+	wg.Done()
+}
+
 func main() {
 	switch os.Args[1] {
 	case "1":
@@ -97,7 +112,7 @@ func main() {
 		go initAndExecute(&wg, &on)
 		go initAndExecute(&wg, &on)
 		wg.Wait()
-	case "4":
+	case "4.1":
 		// Deadlock: circular dependencies
 		var wg sync.WaitGroup
 		c1 := make(chan int)
@@ -111,5 +126,28 @@ func main() {
 			<-c1
 		})
 		wg.Wait()
+	case "4.2":
+		// Deadlock (The Dining Philosopher)
+		num := 3
+		cstickArr := make([]*CStick, num)
+		philArr := make([]*Phil, num)
+		for i := 0; i < num; i++ {
+			cstickArr[i] = new(CStick)
+		}
+		for i := 0; i < num; i++ {
+			philArr[i] = &Phil{
+				name:           fmt.Sprintf("Phil %v-th", i),
+				LeftChopstick:  cstickArr[i],
+				RightChopstick: cstickArr[(i+1)%num]}
+		}
+		var wg sync.WaitGroup
+		wg.Add(1)
+		wg.Add(1)
+		for i := 0; i < num; i++ {
+			fmt.Println(i)
+			go philArr[i].eat(&wg)
+		}
+		wg.Wait()
+		fmt.Println("All finished eating")
 	}
 }
