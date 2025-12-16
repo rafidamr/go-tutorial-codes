@@ -1,54 +1,57 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 )
 
 type BigNum struct {
-	num     string
-	pointer int
+	digits []int
 }
 
-func (n *BigNum) next() (int, error) {
-	n.pointer--
-	if n.pointer >= 0 {
-		return int(n.num[n.pointer] - '0'), nil
-	} else {
-		return 1, errors.New("out of range")
+func NewBigNum(s string) *BigNum {
+	digits := make([]int, len(s))
+	for i := 0; i < len(s); i++ {
+		digits[len(s)-1-i] = int(s[i] - '0')
 	}
+	return &BigNum{digits: digits}
 }
 
 func main() {
-	x := new(BigNum)
-	//x.num = "3141592653589793238462643383279502884197169399375105820974944592"
-	x.num = "22"
-	x.pointer = len(x.num)
-	y := new(BigNum)
-	//y.num = "2718281828459045235360287471352662497757247093699959574966967627"
-	y.num = "16"
-	y.pointer = len(y.num)
-	result := multiply(x, y, 0, []int{})
-	fmt.Println(result)
+	x := NewBigNum("3141592653589793238462643383279502884197169399375105820974944592")
+	y := NewBigNum("2718281828459045235360287471352662497757247093699959574966967627")
+
+	result := multiply(x, y)
+
+	// Print result in correct order (reverse)
+	for i := len(result) - 1; i >= 0; i-- {
+		fmt.Print(result[i])
+	}
 }
 
-func multiply(x *BigNum, y *BigNum, carry int, result []int) []int {
-	lsbX, okX := x.next()
-	lsbY, okY := y.next()
+func multiply(x *BigNum, y *BigNum) []int {
+	// Result can be at most len(x) + len(y) digits
+	result := make([]int, len(x.digits)+len(y.digits))
 
-	if okX != nil && okY != nil {
-		if carry > 0 {
-			result = append(result, carry)
+	// Multiply each digit of x by each digit of y
+	for i := 0; i < len(x.digits); i++ {
+		for j := 0; j < len(y.digits); j++ {
+			product := x.digits[i] * y.digits[j]
+			result[i+j] += product
 		}
-		return result
 	}
 
-	d := lsbX*lsbY + carry
-	result = append(result, d%10)
-
-	if d/10 == 0 {
-		return multiply(x, y, 0, result)
-	} else {
-		return multiply(x, y, d/10, result)
+	// Handle carries
+	carry := 0
+	for i := 0; i < len(result); i++ {
+		result[i] += carry
+		carry = result[i] / 10
+		result[i] %= 10
 	}
+
+	// Remove leading zeros
+	for len(result) > 1 && result[len(result)-1] == 0 {
+		result = result[:len(result)-1]
+	}
+
+	return result
 }
