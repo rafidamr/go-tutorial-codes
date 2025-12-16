@@ -1,3 +1,6 @@
-go 1.25.0
+go 1.25.4
 
-use ./heap
+use (
+	./course1/week1_assignment1
+	./heap
+)
