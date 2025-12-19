@@ -8,50 +8,48 @@ type BigNum struct {
 	digits []int
 }
 
-func NewBigNum(s string) *BigNum {
-	digits := make([]int, len(s))
-	for i := 0; i < len(s); i++ {
-		digits[len(s)-1-i] = int(s[i] - '0')
+func CreateBigNum(s string) *BigNum {
+	bn := BigNum{digits: make([]int, len(s))}
+	for i := range len(s) {
+		bn.digits[len(s)-i-1] = int(s[i] - '0')
 	}
-	return &BigNum{digits: digits}
+	return &bn
 }
 
 func main() {
-	x := NewBigNum("3141592653589793238462643383279502884197169399375105820974944592")
-	y := NewBigNum("2718281828459045235360287471352662497757247093699959574966967627")
+	x := CreateBigNum("3141592653589793238462643383279502884197169399375105820974944592")
+	y := CreateBigNum("2718281828459045235360287471352662497757247093699959574966967627")
 
 	result := multiply(x, y)
 
-	// Print result in correct order (reverse)
 	for i := len(result) - 1; i >= 0; i-- {
 		fmt.Print(result[i])
 	}
 }
 
 func multiply(x *BigNum, y *BigNum) []int {
-	// Result can be at most len(x) + len(y) digits
 	result := make([]int, len(x.digits)+len(y.digits))
 
-	// Multiply each digit of x by each digit of y
-	for i := 0; i < len(x.digits); i++ {
-		for j := 0; j < len(y.digits); j++ {
-			product := x.digits[i] * y.digits[j]
-			result[i+j] += product
+	for i, a := range x.digits {
+		for j, b := range y.digits {
+			// a property of middle school multiplication:
+			// an index of a result is the sum of operands' indices
+			result[i+j] += a * b
 		}
 	}
 
-	// Handle carries
 	carry := 0
-	for i := 0; i < len(result); i++ {
-		result[i] += carry
-		carry = result[i] / 10
-		result[i] %= 10
+	for i := range result {
+		currNumber := carry + result[i]
+		result[i] = currNumber % 10
+		carry = currNumber / 10
 	}
 
-	// Remove leading zeros
-	for len(result) > 1 && result[len(result)-1] == 0 {
-		result = result[:len(result)-1]
+	// traverse from behind until index has value > 0
+	i := len(result) - 1
+	for head := 0; head == 0; i-- {
+		head = result[i]
 	}
 
-	return result
+	return result[:i+2]
 }
