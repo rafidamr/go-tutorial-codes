@@ -1,6 +1,8 @@
 go 1.25.4
 
 use (
-	./course1/week1_assignment1
+	./course1/week1_assignment1_iterative
+	./course1/week1_assignment1_karatsuba
+	./course1/week2_assignment1_count_inversions
 	./heap
 )
