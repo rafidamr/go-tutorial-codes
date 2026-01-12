@@ -1,25 +1,58 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+)
 
 func main() {
-	arr := []int{1, 100, 2, 10}
-	sortedArr := mergeSort(arr)
-	fmt.Println(sortedArr)
+	// arr := []int{1, 1, 200, 10, 30, 40}
+	arr, err := readFromFile("./IntegerArray_1.txt")
+	if err != nil {
+		fmt.Println("Errror!")
+		return
+	}
+	_, inversionCount := mergeSort(arr)
+	fmt.Println(inversionCount)
 }
 
-func mergeSort(arr []int) []int {
+func readFromFile(filename string) ([]int, error) {
+	arr := []int{}
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		num, err := strconv.Atoi(scanner.Text())
+		if err != nil {
+			return nil, err
+		}
+		arr = append(arr, num)
+	}
+	if scanner.Err() != nil {
+		return nil, scanner.Err()
+	}
+	return arr, nil
+}
+
+func mergeSort(arr []int) ([]int, int) {
 	_len := len(arr)
 	if _len == 1 {
-		return arr
+		return arr, 0
 	}
-	left := mergeSort(arr[:(_len / 2)])
-	right := mergeSort(arr[(_len / 2):])
-	newArr := merge(left, right)
-	return newArr
+	left, lCount := mergeSort(arr[:(_len / 2)])
+	right, rCount := mergeSort(arr[(_len / 2):])
+	newArr, splitCount := merge(left, right)
+	return newArr, splitCount + rCount + lCount
 }
 
-func merge(left []int, right []int) []int {
+// Piggybacking the merge sort to count the number of split inversion
+func merge(left []int, right []int) ([]int, int) {
+	inversionCount := 0
 	newArr := make([]int, len(left)+len(right))
 	i := 0
 	j := 0
@@ -31,6 +64,7 @@ func merge(left []int, right []int) []int {
 		} else {
 			newArr[k] = right[j]
 			j++
+			inversionCount += len(left) - i
 		}
 		k++
 		if i == len(left) || j == len(right) {
@@ -47,5 +81,5 @@ func merge(left []int, right []int) []int {
 		j++
 		k++
 	}
-	return newArr
+	return newArr, inversionCount
 }
