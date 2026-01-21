@@ -4,5 +4,6 @@ use (
 	./course1/week1_assignment1_iterative
 	./course1/week1_assignment1_karatsuba
 	./course1/week2_assignment1_count_inversions
+	./course1/week3_quicksort
 	./heap
 )

@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// arr := []int{1, 1, 200, 10, 30, 40}
-	arr, err := readFromFile("./IntegerArray_1.txt")
+	arr, err := readFromFile("./numbers.txt")
 	if err != nil {
 		fmt.Println("Errror!")
 		return
