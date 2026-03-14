@@ -91,16 +91,15 @@ func contract(graph *Graph, cluster *Cluster) {
 		}
 	}
 
-	if len(edges) == 0 {
-		return
-	}
-
 	// pick a random crossing edge, then merge its two clusters
 	e := edges[rand.Intn(len(edges))]
 	iA := membership[e.u]
 	iB := membership[e.v]
 
+	// move all B members to A
 	(*cluster)[iA] = append((*cluster)[iA], (*cluster)[iB]...)
+
+	// remove B from cluster registry via last element replacement and trimming
 	clrLen := len(*cluster)
 	(*cluster)[iB] = (*cluster)[clrLen-1]
 	*cluster = (*cluster)[:clrLen-1]
