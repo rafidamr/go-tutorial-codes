@@ -16,7 +16,6 @@ type Graph map[int][]int
 type Cluster [][]int
 
 func main() {
-	fmt.Println("Running V1")
 	graph, _cluster := readFromFile("./graph.txt")
 	var manyK []int
 
@@ -24,7 +23,7 @@ func main() {
 		cluster := make(Cluster, len(_cluster))
 		copy(cluster, _cluster)
 		for len(cluster) > 2 {
-			contract(&cluster)
+			contract(&graph, &cluster)
 		}
 		k := countCrossingEdges(&graph, &cluster)
 		manyK = append(manyK, k)
@@ -71,21 +70,41 @@ func readFromFile(filename string) (Graph, Cluster) {
 }
 
 // contract
-//   - rand choose cluster A and B from registry
-//   - copy all B's vertices into A's list.
-//   - Delete B from registry
+//   - pick a random edge that crosses two different clusters
+//   - merge the two clusters
 //   - stop if len(C) == 2, else repeat
-func contract(cluster *Cluster) {
-	clrLen := len(*cluster)
-	iA, iB := 0, 0
-	for iA == iB {
-		iA = rand.Intn(clrLen)
-		iB = rand.Intn(clrLen)
+func contract(graph *Graph, cluster *Cluster) {
+	// build membership map: vertex -> cluster index
+	membership := make(map[int]int)
+	for i, c := range *cluster {
+		for _, v := range c {
+			membership[v] = i
+		}
 	}
+
+	// collect all cross-cluster edges (each edge counted once via u < v)
+	type Edge struct{ u, v int }
+	var edges []Edge
+	for u, neighbors := range *graph {
+		for _, v := range neighbors {
+			if u < v && membership[u] != membership[v] {
+				edges = append(edges, Edge{u, v})
+			}
+		}
+	}
+
+	// pick a random crossing edge, then merge its two clusters
+	e := edges[rand.Intn(len(edges))]
+	iA := membership[e.u]
+	iB := membership[e.v]
+
+	// move all B members to A
 	(*cluster)[iA] = append((*cluster)[iA], (*cluster)[iB]...)
-	// replace B with last element then trim the cluster
+
+	// remove B from cluster registry via last element replacement and trimming
+	clrLen := len(*cluster)
 	(*cluster)[iB] = (*cluster)[clrLen-1]
-	*cluster = slices.Delete(*cluster, clrLen-1, clrLen)
+	*cluster = (*cluster)[:clrLen-1]
 }
 
 // count crossing k edges
