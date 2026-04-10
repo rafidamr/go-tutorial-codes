@@ -7,5 +7,5 @@ use (
 	./course1/week3_quicksort
 	./course1/week4_graph_contraction
 	./course2/week1_graph_scc
-	./heap
+	./course2/week2_dijkstra_shortest_path
 )
