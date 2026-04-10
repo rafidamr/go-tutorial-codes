@@ -5,32 +5,31 @@ import (
 	"slices"
 )
 
-// Minimum Heap
-type Heap struct {
+type MinHeap struct {
 	data []int
 }
 
-func (h *Heap) Len() int {
+func (h *MinHeap) Len() int {
 	return len(h.data)
 }
 
-func (h *Heap) Swap(idx1 int, idx2 int) {
+func (h *MinHeap) Swap(idx1 int, idx2 int) {
 	h.data[idx1], h.data[idx2] = h.data[idx2], h.data[idx1]
 }
 
-func (h *Heap) Peek() (int, bool) {
+func (h *MinHeap) Peek() (int, bool) {
 	if h.Len() == 0 {
 		return 0, false
 	}
 	return h.data[0], true
 }
 
-func (h *Heap) Push(val int) {
+func (h *MinHeap) Push(val int) {
 	h.data = append(h.data, val)
 	h.HeapifyUp(h.Len() - 1)
 }
 
-func (h *Heap) Pop() (int, bool) {
+func (h *MinHeap) Pop() (int, bool) {
 	smallest, ok := h.Peek()
 	if !ok {
 		return 0, false
@@ -41,7 +40,7 @@ func (h *Heap) Pop() (int, bool) {
 	return smallest, true
 }
 
-func (h *Heap) HeapifyUp(idx int) {
+func (h *MinHeap) HeapifyUp(idx int) {
 	for idx > 0 {
 		p := parentIdxOf(idx)
 		if h.data[idx] < h.data[p] {
@@ -53,7 +52,7 @@ func (h *Heap) HeapifyUp(idx int) {
 	}
 }
 
-func (h *Heap) HeapifyDown(idx int) {
+func (h *MinHeap) HeapifyDown(idx int) {
 	n := h.Len()
 	for {
 		l := leftChildIdxOf(idx)
@@ -81,8 +80,8 @@ func leftChildIdxOf(i int) int  { return 2*i + 1 }
 func rightChildIdxOf(i int) int { return 2*i + 2 }
 
 // Utils
-func buildDummyHeap() *Heap {
-	var h Heap
+func buildDummyHeap() *MinHeap {
+	var h MinHeap
 	arr := []int{8, 7, 1, 5, 9}
 	for _, v := range arr {
 		h.Push(v)
@@ -90,7 +89,7 @@ func buildDummyHeap() *Heap {
 	return &h
 }
 
-func testDummyHeap(h *Heap) {
+func testDummyHeap(h *MinHeap) {
 	fmt.Println((*h).data)
 	h.Pop()
 	fmt.Println((*h).data)
