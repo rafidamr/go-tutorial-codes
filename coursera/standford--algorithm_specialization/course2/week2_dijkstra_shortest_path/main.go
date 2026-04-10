@@ -19,7 +19,7 @@ var graph Graph
 var heap DijkstraHeap
 
 var conquered = make(map[int]bool)
-var start, maxIdx = 1, 200
+var vStart, vMaxId = 1, 200
 
 func main() {
 	graph = buildGraph("course2/week2_dijkstra_shortest_path/weighted_graph.txt")
@@ -52,19 +52,23 @@ func buildGraph(filename string) Graph {
 }
 
 func initHeap() DijkstraHeap {
-	k := make(map[int]int)
-	// init all to 1 million distance
-	for i := start; i <= maxIdx; i++ {
-		k[i] = 1000000
+	totalDist := make(map[int]int)
+	// init all vertices to 1 million distance
+	for i := vStart; i <= vMaxId; i++ {
+		totalDist[i] = 1000000
 	}
-	// actual distance from start vertex to its unconquered neighbors
-	k[start] = 0
-	for _, v := range graph[start] {
-		k[v.id] = v.dist
+	// set actual distance from start vertex to its unconquered neighbors
+	totalDist[vStart] = 0
+	for _, v := range graph[vStart] {
+		totalDist[v.id] = v.dist
 	}
 
-	h := DijkstraHeap{data: make([]int, 0), totalDist: k, loc: make(map[int]int)}
-	for i := start; i <= maxIdx; i++ {
+	h := DijkstraHeap{
+		data:      make([]int, 0),
+		totalDist: totalDist,
+		loc:       make(map[int]int),
+	}
+	for i := vStart; i <= vMaxId; i++ {
 		h.Push(i)
 	}
 	return h
