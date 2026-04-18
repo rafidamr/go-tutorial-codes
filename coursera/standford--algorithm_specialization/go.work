@@ -8,4 +8,5 @@ use (
 	./course1/week4_graph_contraction
 	./course2/week1_graph_scc
 	./course2/week2_dijkstra_shortest_path
+	./course2/week3_heap_median
 )
