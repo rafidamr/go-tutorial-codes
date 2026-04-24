@@ -6,13 +6,14 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 func main() {
 	// need to construct array because iterating over ht map is ~2x slower
 	ht, arr := buildDataStructure("course2/week4_hash_table/numbers.txt")
-	count := syncCount2Sum(ht, arr)
-	// count := exhConcurCount2Sum(ht, arr)
+	// count := syncCount2Sum(ht, arr)
+	count := exhConcurCount2Sum(ht, arr)
 	// count := anConcurCount2Sum(ht, arr)
 
 	// The correct answer is 427
@@ -51,6 +52,35 @@ func syncCount2Sum(hashTable *map[int64]bool, array *[]int64) uint {
 			}
 		}
 	}
+
+	return count
+}
+
+// Exhaustive concurrency, time: 514.66s user 2.62s system 948% cpu 54.511 total
+func exhConcurCount2Sum(hashTable *map[int64]bool, array *[]int64) uint {
+	var arr = *array
+	var ht = *hashTable
+	var count uint
+
+	var wg sync.WaitGroup
+	var m sync.Mutex
+
+	for t := int64(-10000); t <= 10000; t++ {
+		wg.Go(func() {
+			for _, x := range arr {
+				var y = t - x
+				if ht[y] && y != x {
+					m.Lock()
+					count++
+					m.Unlock()
+					break
+				}
+			}
+
+		})
+	}
+
+	wg.Wait()
 
 	return count
 }
