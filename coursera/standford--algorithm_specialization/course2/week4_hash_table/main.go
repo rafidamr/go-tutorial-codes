@@ -4,17 +4,19 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
 )
 
 func main() {
 	// need to construct array because iterating over ht map is ~2x slower
 	ht, arr := buildDataStructure("course2/week4_hash_table/numbers.txt")
 	// count := syncCount2Sum(ht, arr)
-	count := exhConcurCount2Sum(ht, arr)
-	// count := anConcurCount2Sum(ht, arr)
+	// count := exhConcurCount2Sum(ht, arr)
+	count := anConcurCount2Sum(ht, arr)
 
 	// The correct answer is 427
 	fmt.Println(count)
@@ -80,6 +82,42 @@ func exhConcurCount2Sum(hashTable *map[int64]bool, array *[]int64) uint {
 		})
 	}
 
+	wg.Wait()
+
+	return count
+}
+
+// Another concurrency, time: 493.46s user 2.40s system 934% cpu 53.067 total
+func anConcurCount2Sum(hashTable *map[int64]bool, array *[]int64) uint64 {
+	var arr = *array
+	var ht = *hashTable
+	var count uint64
+
+	var workerNum = runtime.NumCPU()
+	var tasks = make(chan int64, workerNum)
+	var wg sync.WaitGroup
+
+	for w := 0; w < workerNum; w++ {
+		wg.Go(func() {
+			var local uint64
+			for t := range tasks {
+				for _, x := range arr {
+					var y = t - x
+					if ht[y] && y != x {
+						local++
+						break
+					}
+				}
+			}
+			atomic.AddUint64(&count, local)
+		})
+	}
+
+	for t := int64(-10000); t <= 10000; t++ {
+		tasks <- t
+	}
+
+	close(tasks)
 	wg.Wait()
 
 	return count
