@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"cmp"
+	"fmt"
 	"os"
 	"slices"
 	"strconv"
@@ -14,6 +15,15 @@ type Job struct {
 	length      int
 	score_diff  int
 	score_ratio float64
+}
+
+func Schedule() {
+	jobs := buildJobSequence("course3/week1_greedy_schedule_mst/jobs.txt")
+	sorted_ratio := SortByRatio(jobs)
+	sorted_diff := SortByDiff(jobs)
+	tDiff := SumWeightedCompletion(sorted_diff)
+	tRatio := SumWeightedCompletion(sorted_ratio)
+	fmt.Println(tDiff, tRatio)
 }
 
 // sort in decreasing order
