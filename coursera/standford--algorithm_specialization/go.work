@@ -10,4 +10,5 @@ use (
 	./course2/week2_dijkstra_shortest_path
 	./course2/week3_heap_median
 	./course2/week4_hash_table
+	./course3/week1_greedy_schedule_mst
 )
