@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	dheap "shared/heap"
 	"strconv"
 	"strings"
 )
@@ -16,7 +17,7 @@ type Vertex struct {
 type Graph map[int][]Vertex
 
 var graph Graph
-var heap DijkstraHeap
+var heap dheap.DistMinHeap
 
 var conquered = make(map[int]bool)
 var vStart, vMaxId = 1, 200
@@ -51,7 +52,7 @@ func buildGraph(filename string) Graph {
 	return g
 }
 
-func initHeap() DijkstraHeap {
+func initHeap() dheap.DistMinHeap {
 	totalDist := make(map[int]int)
 	// init all vertices to 1 million distance
 	for i := vStart; i <= vMaxId; i++ {
@@ -63,10 +64,10 @@ func initHeap() DijkstraHeap {
 		totalDist[v.id] = v.dist
 	}
 
-	h := DijkstraHeap{
-		data:      make([]int, 0),
-		totalDist: totalDist,
-		loc:       make(map[int]int),
+	h := dheap.DistMinHeap{
+		Data: make([]int, 0),
+		Dist: totalDist,
+		Loc:  make(map[int]int),
 	}
 	for i := vStart; i <= vMaxId; i++ {
 		h.Push(i)
@@ -81,8 +82,8 @@ func expandTerritory() {
 		for _, w := range graph[vId] {
 			if !conquered[w.id] {
 				heap.Remove(w.id)
-				greedyScore := min(heap.totalDist[w.id], heap.totalDist[vId]+w.dist)
-				heap.totalDist[w.id] = greedyScore
+				greedyScore := min(heap.Dist[w.id], heap.Dist[vId]+w.dist)
+				heap.Dist[w.id] = greedyScore
 				heap.Push(w.id)
 			}
 		}
@@ -91,7 +92,7 @@ func expandTerritory() {
 
 func inspectKeys() {
 	for _, vId := range []int{7, 37, 59, 82, 99, 115, 133, 165, 188, 197} {
-		fmt.Print(heap.totalDist[vId])
+		fmt.Print(heap.Dist[vId])
 		fmt.Print(",")
 	}
 	fmt.Println()

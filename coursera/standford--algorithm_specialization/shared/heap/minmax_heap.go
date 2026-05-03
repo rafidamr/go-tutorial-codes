@@ -1,4 +1,4 @@
-package main
+package heap
 
 import (
 	"fmt"
@@ -97,11 +97,6 @@ func (h *Heap) heapifyDown(idx int) {
 		idx = iWithSmallerV
 	}
 }
-
-// Helpers
-func parentIdxOf(i int) int     { return (i - 1) / 2 }
-func leftChildIdxOf(i int) int  { return 2*i + 1 }
-func rightChildIdxOf(i int) int { return 2*i + 2 }
 
 // Utils
 func buildDummyHeap() *Heap {

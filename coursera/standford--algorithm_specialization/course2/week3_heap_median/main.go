@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	mmheap "shared/heap"
 	"strconv"
 	"strings"
 )
@@ -35,8 +36,8 @@ func streamOnHeap(stream *[]int) (int, int) {
 	}
 
 	var perfTime = 1
-	var maxHeap = NewHeap(MaxMode)
-	var minHeap = NewHeap(MinMode)
+	var maxHeap = mmheap.NewHeap(mmheap.MaxMode)
+	var minHeap = mmheap.NewHeap(mmheap.MinMode)
 	var totalSum int
 
 	for _, num := range s {

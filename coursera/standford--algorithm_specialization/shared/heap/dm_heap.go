@@ -48,10 +48,11 @@ func (h *DistMinHeap) Remove(vId int) {
 	h.Swap(idx, h.Len()-1)
 	h.Data = slices.Delete(h.Data, h.Len()-1, h.Len())
 	h.HeapifyDown(idx)
+	h.HeapifyUp(idx)
 }
 
 func (h *DistMinHeap) HeapifyUp(idx int) {
-	for idx > 0 {
+	for idx > 0 && idx < h.Len() {
 		p := parentIdxOf(idx)
 		if h.Dist[h.Data[idx]] < h.Dist[h.Data[p]] {
 			h.Swap(idx, p)
@@ -83,7 +84,3 @@ func (h *DistMinHeap) HeapifyDown(idx int) {
 		idx = iWithSmallerV
 	}
 }
-
-func parentIdxOf(i int) int     { return (i - 1) / 2 }
-func leftChildIdxOf(i int) int  { return 2*i + 1 }
-func rightChildIdxOf(i int) int { return 2*i + 2 }
