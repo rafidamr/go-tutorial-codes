@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	// Schedule()
+	Schedule()
 	fmt.Println("------------------------------")
-
+	RunPrim()
 }
