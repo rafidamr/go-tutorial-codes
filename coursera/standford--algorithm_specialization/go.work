@@ -11,5 +11,6 @@ use (
 	./course2/week3_heap_median
 	./course2/week4_hash_table
 	./course3/week1_greedy_schedule_mst
+	./course3/week2_clustering_kruskal_mst
 	./shared/heap
 )
