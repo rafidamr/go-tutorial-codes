@@ -43,6 +43,8 @@ func readNodes(filename string) []int {
 	return nodes
 }
 
+// finds the k cluster number such that its minimum edge cost is 3 / spacing at least 3
+// aka. when the minimum edge cost is 3 then it's merged, the number of cluster become k-1
 func buildGraphFromNodes(nodes *[]int) UnionFindGraph {
 	var g UnionFindGraph
 	g.clusters = make(map[int][]int)

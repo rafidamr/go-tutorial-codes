@@ -115,8 +115,7 @@ func sortEdges(edges *[]Edge) []Edge {
 	return sorted
 }
 
-// returns max spacing. Max spacing of K clusters is defined by an edge cost,
-// of an edge within edges array sorted by their costs in ascending order,
+// returns max spacing. Max spacing of K clusters is defined by an edge with smallest cost
 // that if its two endpoints are merged, the clusters numbers become k-1
 func cluster(g *UnionFindGraph) int {
 	var spacing int
