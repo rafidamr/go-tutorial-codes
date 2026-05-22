@@ -17,20 +17,29 @@ type Edge struct {
 }
 
 // a graph optimized/acting as Union-Find data structure
-type Graph struct {
-	edges        []Edge
-	clusters     map[int][]int // lead_id to its members
-	leaders      map[int]int   // member_id to its lead_id
-	clusters_num int
+type UnionFindGraph struct {
+	edges       []Edge
+	clusters    map[int][]int // lead_id to its members
+	leaders     map[int]int   // member_id to its lead_id
+	clustersNum int
 }
 
 // return the leader of v
-func (g *Graph) Find(v int) int {
-	return g.leaders[v]
+func (g *UnionFindGraph) Find(v int) int {
+	if leader_id, ok := g.leaders[v]; ok {
+		return leader_id
+	} else {
+		return -1
+	}
 }
 
 // unify the clusters of a pair of vertices into one
-func (g *Graph) Union(v1 int, v2 int) {
+func (g *UnionFindGraph) Union(v1 int, v2 int) {
+	// skip for the same leader (same cluster)
+	if g.Find(v1) == g.Find(v2) {
+		return
+	}
+
 	var master, absorbed int
 
 	if len(g.clusters[g.Find(v1)]) > len(g.clusters[g.Find(v2)]) {
@@ -47,10 +56,10 @@ func (g *Graph) Union(v1 int, v2 int) {
 	}
 
 	delete(g.clusters, absorbed)
-	g.clusters_num -= 1
+	g.clustersNum -= 1
 }
 
-var K = 3
+var K = 4
 
 func runKruskal(filename string) {
 	graph := buildGraph(filename)
@@ -59,8 +68,8 @@ func runKruskal(filename string) {
 	fmt.Println(spacing)
 }
 
-func buildGraph(filename string) Graph {
-	var g Graph
+func buildGraph(filename string) UnionFindGraph {
+	var g UnionFindGraph
 	g.clusters = make(map[int][]int)
 	g.leaders = make(map[int]int)
 
@@ -70,7 +79,7 @@ func buildGraph(filename string) Graph {
 	scanner := bufio.NewScanner(ptr)
 	for scanner.Scan() {
 		line := scanner.Text()
-		g.clusters_num, _ = strconv.Atoi(strings.TrimSpace(line))
+		g.clustersNum, _ = strconv.Atoi(strings.TrimSpace(line))
 		break
 	}
 
@@ -106,17 +115,16 @@ func sortEdges(edges *[]Edge) []Edge {
 	return sorted
 }
 
-func cluster(g *Graph) int {
+// returns max spacing. Max spacing of K clusters is defined by an edge cost,
+// of an edge within edges array sorted by their costs in ascending order,
+// that if its two endpoints are merged, the clusters numbers become k-1
+func cluster(g *UnionFindGraph) int {
 	var spacing int
 
 	for _, e := range g.edges {
-		if g.Find(e.v1) == g.Find(e.v2) {
-			continue
-		}
-
 		g.Union(e.v1, e.v2)
 
-		if g.clusters_num == K {
+		if g.clustersNum == K-1 {
 			spacing = e.cost
 			break
 		}
